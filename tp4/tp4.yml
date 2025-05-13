@@ -1,0 +1,33 @@
+---
+- name: Supprimmer les paquets
+  hosts: webservers
+  remote_user: vagrant
+  become: true
+  become_user: root
+
+  vars:
+    apache_listen_port: 88
+
+  tasks:
+    - name: Appel des taches de tp2
+      ansible.builtin.include_tasks:
+        file: tasks_tp2.yml
+    
+    - name: Installation de mysql
+      ansible.builtin.include_role:
+        name: geerlingguy.mysql
+
+    - name: Installation de apache2
+      ansible.builtin.include_role:
+        name: geerlingguy.apache
+
+    - name: Gather the rpm package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Copy index.html if apache2 or nginx is installed
+      ansible.builtin.template:
+        src: template/index2.j2
+        dest: /var/www/html/index.html
+        mode: '0644'
+      when: "'apache2' in ansible_facts.packages"

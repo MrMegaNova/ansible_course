@@ -1,0 +1,28 @@
+---
+- name: Vault face
+  hosts: webservers
+  remote_user: vagrant
+  become: true
+  become_user: root
+
+  vars_files:
+  - vars/vars.yml
+  - vaults/db_secret.yml
+
+  tasks:
+  
+    - name: Get du hostname et multiplication
+      ansible.builtin.set_fact:
+        hostname_calculated: "{{ ansible_hostname[-1:] | int * 3}}"
+    
+    - name: conversion du dbname
+      ansible.builtin.set_fact:
+        db_name: "db_{{ hostname_calculated }}"
+
+    - name: Show db_name
+      debug:
+        msg: "db_name: {{ db_name }}"
+
+    - name: Installation de mysql
+      ansible.builtin.include_role:
+        name: geerlingguy.mysql

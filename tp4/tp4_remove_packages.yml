@@ -1,5 +1,5 @@
 ---
-- name: Installer et configurer docker
+- name: Supprimmer les paquets
   hosts: all
   remote_user: vagrant
   become: true
@@ -9,11 +9,11 @@
     - name: Remove packages
       ansible.builtin.apt:
         update_cache: true
-        name: "{{ item }}"
+        name:
+          - apache2
+          - mysql-server
+          - git
+          - cowsay
+          - nginx
         state: absent
-      loop:
-        - apache2
-        - mysql-server
-        - git
-        - cowsay
-        - nginx
+        

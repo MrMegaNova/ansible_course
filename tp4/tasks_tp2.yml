@@ -1,0 +1,20 @@
+---
+- name: Install ufw on ubuntu
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+  when: ansible_distribution == "Ubuntu"
+  tags: ufw
+
+- name: Gather the rpm package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  tags: apache
+
+- name: Copy index.html if apache2 or nginx is installed
+  ansible.builtin.template:
+    src: template/index.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+  when: "'apache2' in ansible_facts.packages"
+  tags: apache
